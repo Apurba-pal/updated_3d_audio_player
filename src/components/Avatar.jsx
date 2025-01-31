@@ -23,7 +23,7 @@ const corresponding = {
   // Add more visemes if needed
 };
 
-export function Avatar({ audioUrl, lipsyncData, ...props }) {
+export function Avatar({ audioUrl, lipsyncData, setIsLoading, ...props }) {
   const [animation, setAnimation] = useState("Idle");
   const group = useRef();
   const { nodes, materials } = useGLTF("/models/debarun.glb");
@@ -85,6 +85,7 @@ export function Avatar({ audioUrl, lipsyncData, ...props }) {
 
       audio.addEventListener("ended", () => {
         clearInterval(interval);
+        setIsLoading(false); // Re-enable the input box and button when audio ends
       });
 
       return () => {
@@ -92,7 +93,7 @@ export function Avatar({ audioUrl, lipsyncData, ...props }) {
         audio.pause();
       };
     }
-  }, [audioUrl, lipsyncData]);
+  }, [audioUrl, lipsyncData, setIsLoading]);
 
   return (
     <group {...props} dispose={null} ref={group}>

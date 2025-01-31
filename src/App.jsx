@@ -34,16 +34,9 @@ function App() {
       setLipsyncData(lipsyncData);
     } catch (error) {
       console.error("Error fetching sound:", error);
+      setIsLoading(false); // Re-enable the input box and button on error
     }
   };
-
-  useEffect(() => {
-    if (audioUrl) {
-      const audio = new Audio(audioUrl);
-      audio.addEventListener("play", () => setIsLoading(false));
-      audio.play();
-    }
-  }, [audioUrl]);
 
   return (
     <>
@@ -52,7 +45,7 @@ function App() {
         camera={{ position: [0, 0, 3], fov: 35, near: 0.1, far: 1000 }}
       >
         <color attach="background" args={["black"]} />
-        <Experience audioUrl={audioUrl} lipsyncData={lipsyncData} />
+        <Experience audioUrl={audioUrl} lipsyncData={lipsyncData} setIsLoading={setIsLoading} />
         {/* Post-processing effects */}
         {/* <EffectComposer>
           <DepthOfField
@@ -79,6 +72,7 @@ function App() {
           onChange={(e) => setText(e.target.value)}
           placeholder="Enter your text"
           style={{ marginRight: "10px", padding: "5px", width: "300px" }}
+          disabled={isLoading} // Disable the input box
         />
         <button onClick={handleSend} style={{ padding: "5px 10px" }} disabled={isLoading}>
           {isLoading ? "Loading..." : "Send"}
