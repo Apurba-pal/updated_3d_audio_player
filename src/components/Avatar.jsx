@@ -23,25 +23,37 @@ const corresponding = {
   // Add more visemes if needed
 };
 
-export function Avatar({ audioUrl, lipsyncData, setIsLoading, ...props }) {
+export function Avatar({ audioUrl, lipsyncData, setIsLoading, isLoading, ...props }) {
   const [animation, setAnimation] = useState("Idle");
   const group = useRef();
   const { nodes, materials } = useGLTF("/models/debarun.glb");
   const { animations: idleAnimation } = useFBX("/animations/Idle.fbx");
   const { animations: angryAnimation } = useFBX("/animations/Angry Gesture.fbx");
   const { animations: greetingAnimation } = useFBX("/animations/Standing Greeting.fbx");
-  const { actions } = useAnimations([idleAnimation[0], angryAnimation[0], greetingAnimation[0]], group);
+  const { animations: thinkingAnimation } = useFBX("/animations/Thinking.fbx"); // Add your thinking animation here
+  const { actions } = useAnimations([idleAnimation[0], angryAnimation[0], greetingAnimation[0], thinkingAnimation[0]], group);
 
   idleAnimation[0].name = "Idle";
   angryAnimation[0].name = "Angry";
   greetingAnimation[0].name = "Greeting";
+  thinkingAnimation[0].name = "Thinking"; // Name your thinking animation
 
   useEffect(() => {
+    console.log("Available actions:", actions); // Debug: log available actions
     if (actions && actions[animation]) {
+      console.log(`Playing animation: ${animation}`); // Debug: log the animation being played
       actions[animation].reset().fadeIn(0.5).play();
       return () => actions[animation].fadeOut(0.5);
     }
   }, [animation, actions]);
+
+  useEffect(() => {
+    if (isLoading) {
+      setAnimation("Thinking"); // Play thinking animation when isLoading is true
+    } else {
+      setAnimation("Idle"); // Reset to Idle animation when isLoading is false
+    }
+  }, [isLoading]);
 
   useEffect(() => {
     if (audioUrl && lipsyncData) {

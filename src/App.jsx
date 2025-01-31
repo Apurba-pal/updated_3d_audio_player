@@ -4,17 +4,15 @@ import { EffectComposer, DepthOfField } from "@react-three/postprocessing";
 import React, { useState, useEffect } from "react";
 
 function App() {
-  const [text, setText] = useState("");
   const [audioUrl, setAudioUrl] = useState(null);
   const [lipsyncData, setLipsyncData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSend = async () => {
+  const handlePlay = async () => {
     setIsLoading(true);
-    setText(""); // Clear the input box immediately
     try {
       const response = await fetch(
-        `https://api.globaltfn.tech/getsound?request=${encodeURIComponent(text)}`,
+        `https://api.globaltfn.tech/getsound?request=sample_request`, // Replace with your actual request
         {
           method: "GET",
           headers: {
@@ -34,7 +32,7 @@ function App() {
       setLipsyncData(lipsyncData);
     } catch (error) {
       console.error("Error fetching sound:", error);
-      setIsLoading(false); // Re-enable the input box and button on error
+      setIsLoading(false); // Re-enable the play button on error
     }
   };
 
@@ -45,7 +43,7 @@ function App() {
         camera={{ position: [0, 0, 3], fov: 35, near: 0.1, far: 1000 }}
       >
         <color attach="background" args={["black"]} />
-        <Experience audioUrl={audioUrl} lipsyncData={lipsyncData} setIsLoading={setIsLoading} />
+        <Experience audioUrl={audioUrl} lipsyncData={lipsyncData} setIsLoading={setIsLoading} isLoading={isLoading} />
         {/* Post-processing effects */}
         {/* <EffectComposer>
           <DepthOfField
@@ -66,16 +64,8 @@ function App() {
           background: "rgba(0, 0, 0, 0.5)",
         }}
       >
-        <input
-          type="text"
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          placeholder="Enter your text"
-          style={{ marginRight: "10px", padding: "5px", width: "300px" }}
-          disabled={isLoading} // Disable the input box
-        />
-        <button onClick={handleSend} style={{ padding: "5px 10px" }} disabled={isLoading}>
-          {isLoading ? "Loading..." : "Send"}
+        <button onClick={handlePlay} style={{ padding: "10px 20px" }} disabled={isLoading}>
+          {isLoading ? "Loading..." : "Play"}
         </button>
       </div>
     </>
